@@ -1,3 +1,16 @@
+<style>
+.footer {
+    color: black; background: #E8E8E8;
+    position: fixed; top: 90%;
+    text-align:center; width:100%;
+}
+.midcenter {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+}
+</style>
+
 Introduction to R, RStudio, R Notebooks and R presentations
 ========================================================
 author: Charles Plessy
@@ -5,8 +18,9 @@ date: Yokohama, August 30th
 autosize: true
 
 <br/>
-<center>![R](Aufseeser_lettrine_R.png)</center>
+<center class="midcenter">![R](Aufseeser_lettrine_R.png)</center>
 <br/>
+
 
 Why R?
 ========================================================
@@ -44,62 +58,161 @@ becoming a platform for releasing results.
 The R language
 ======================================================== 
 
-In `R`, variable names are plain text (no prefix such as `$`, etc).
+`R` calls variable "_objects_"; their names are plain text (no prefix such as `$`, etc).
+In `R` programs, objects are rarely declared before use, but beware that they have no default value.
 
-
-
-```r
-> x == 1
-Erreur : objet 'x' introuvable
-> x = 1
-> x == 1
-[1] TRUE
-> x
-[1] 1
+```{r error=TRUE}
+x + 1
 ```
 
-In this lecture, and like in many `R` resources, I will use `<-`.
+Often you will see this error when you forget to quote text.
+
+```{r error=TRUE}
+read.csv(file = myFile.csv)
+```
+
+
+How to assign values to the objects
+======================================================== 
+
+Just like in English, in programming languages, pay attention that "is equal to" and
+"is it equal to" can misleadingly look the same.
 
 ```{r}
-x <- 1
+x = 1
 x
 ```
 
 ```{r}
-
+x == 1
 ```
 
-The R language
+In this lecture, and like in many `R` resources, the leftwards arrow ("`<-`")" is used
+instead of the equal sign.  The rightwards arrow is seen more rarely, but can be
+useful in interactive sessions.
+
+```{r}
+x <- 1
+1 -> x
+```
+
+The R language likes vectors
 ======================================================== 
 
-```r
-> x == 1
-Erreur : objet 'x' introuvable
-> x = 1
-> x == 1
-[1] TRUE
-> x
-[1] 1
+Most languages made differnces between _scalars_ and _arrays_.
+In `R`, _scalars_ are vectors of length one.
+
+```{r}
+"a"
+c("a")
+c("a", "b")
 ```
 
-In this lecture, and like in many `R` resources, I will use `<-`.
+***
 
-```r
-> x <- 1
-> x
-[1] 1
+Vectorized operations in R are idiomatic and efficient.  Short vectors
+are often _recycled_.
+
+```{r}
+x <- c(1,2,3)
+y <- c(10, 10, 20)
+x + y
+paste(x, y, sep = "_")
+paste0(x, ".txt")
+paste(y, collapse = "~~")
 ```
 
 
-The console
+Lists: a second core class of R
 ======================================================== 
 
-R has a command line interface (CLI).
+Vectors can only contain elements of the same kind.  R will
+frequently _coerce_ the data if needed.
 
-```r
-> 1 + 1
-[1] 2
+```{r error = TRUE}
+x <- c(1, 2, 3, "apples!")
+x
+class(x)
+c(1, c(2, 3), FALSE)
 ```
+
+***
+
+Lists can mix elements from many kinds, and can be nested.
+
+```{r}
+list(1, c(2, 3), "apples!", list(T,F))
+```
+
+
+Data frames: a famous object class from the R language
+======================================================== 
+
+`data.frame`s are lists presented like tables.
+
+```{r}
+df <- data.frame( fruits = c("apples", "bananas", "oranges")
+                , price  = c(2, 1.5, 1.7)
+                , color  = factor(c("yellow", "yellow", "orange"))
+                , stringsAsFactors = FALSE)
+df
+summary(df)
+```
+
+For more performance or modernity, look for `DataFrame`, `data.table` or
+`tibble`.
+
+
+Subsetting elements of objects
+======================================================== 
+
+In brief: by coordinate...
+
+```{r}
+letters[6]
+df[2,3]
+df[,1]
+```
+
+***
+
+...or by name:
+
+```{r}
+df[["price"]]
+df$pri
+```
+
+Tip: in `R`, (almost) everything has a manual page.  Try: `help("[")`
+
+
+Different ways to say "nothing"
+======================================================== 
+
+```{r}
+NA   # not available
+NULL # nothing
+```
+
+***
+
+```{r}
+sum(1,2,NA)
+sum(1,2,NA, na.rm=T)
+```
+
+
+The R console
+======================================================== 
+
+R has a command line interface (CLI).  Not only you can use it like a calculator,
+but you can allso plot graphs.
+
+```{r}
+1 + 1
+```
+
+***
 
 Try `barplot(c(1,2,3))`.  A new window will pop up with a graph like the one below
 
@@ -107,49 +220,71 @@ Try `barplot(c(1,2,3))`.  A new window will pop up with a graph like the one bel
 barplot(c(1,2,3))
 ```
 
+
 First steps in R with Rstudio
 ======================================================== 
 
 [Rstudio](http://www.rstudio.com/) is an integrated development
 environment (IDE) for `R`.
 
-## The console
-
-```r
-> 1 + 1
-[1] 2
-```
-
-
 Try again `boxplot(1,2,3)`.  In _Rstudio_, the plots appear in a special area.
 In other environments, such commands just pop up a new window.
 
-
 ## How did the installation go ?
 
-
-Tip: tab-completion
-======================================================== 
-incremental:true
-type:prompt
-
-Press the <code>tab</code> ↹ key.
+<div class="footer">Tip: press the <code>tab</code> (↹) key for "<em>tab completion</em>"</div>
 
 
-Do not forget that `R` is a language.  It is not just a plotting software.
-
-For example, `ls` is not `ls()`, `x` is not `'x'`, etc.  Errors like `object
-'x' not found` tell that quotes were forgotten.
-
-
-
-
-
-# What is RStudio ?
+Packages
 ======================================================== 
 
-(demo on a tab with RStudio server)
+<div class="footer">Tip: never use `library()` in functions, use `requireNamespace()`.</div>
 
+`R` _packages_ are software libraries used to provide extensions
+to `R`'s base functionalities.  Two steps are necessary to use them:
+
+ - First, _install_ the packages.  This means downloading them from
+   a repository and installing their files in a specific directory
+   on the drive.
+   
+ - Then, make the functions of the package available to `R` in the
+   memory, typically using the `library()` command.
+   
+*** 
+
+There four main sources of packages
+
+ - the Complete `R` Archive Network (CRAN),
+ - Bioconductor,
+ - GitHub (`devtools::install_github`),
+ - For Linux users (especially Debian and Ubuntu), binary packages.
+ 
+
+R packages from Linux distributions
+======================================================== 
+
+R packages from distributions like Debian can be old.  But equally old.
+
+Example <https://packages.debian.org/r-bioc-edger>
+
+Linux distribution are usually better regarding external dependancies.
+
+Packages can be installed in various locations; one possible explanation
+for ununderstandable errors is that an older version of the package,
+installed in a higher-priority location, took precedence.
+
+
+Example installation from RStudio
+======================================================== 
+
+```r
+install.packages("rmarkdown")
+```
+
+<center>~ or ~</cente>
+
+
+![](InstallPackages.png)
 
 
 # R Markdown
@@ -160,89 +295,33 @@ For example, `ls` is not `ls()`, `x` is not `'x'`, etc.  Errors like `object
 ![](Markdown.png)
 
 
-
 Tip: put a command in parenthesis to force ouptut of its value.
 
 ```{r}
 x <- 1
-```
-
-(No output)
-
-```{r}
 (x <- 1)
 ```
-
-Packages
-======================================================== 
-
-Package ?  Library ?
-
-CRAN,
-
-Bioconductor,
-
-GitHub, ...
-
-## R packages from Linux distributions
-
-R packages from distributions like Debian can be old.  But equally old.
-
-Example <https://packages.debian.org/r-bioc-edger>
-
-Linux distribution are usually better regarding external dependancies.
-
-
-`library()`, ...   Never use `library()` in functions. requireNamespace, ...
-
-
-```r
-> packageDescription('stats')
-Package: stats
-Version: 3.1.1
-Priority: base
-Title: The R Stats Package
-Author: R Core Team and contributors worldwide
-Maintainer: R Core Team <R-core@r-project.org>
-Description: R statistical functions
-License: Part of R 3.1.1
-Built: R 3.1.1; x86_64-pc-linux-gnu; 2014-10-15
-      14:19:59 UTC; unix
-
--- File: /usr/lib/R/library/stats/Meta/package.rds 
-```
-
-## Tip number 3
-
-Packages can be installed in various locations; one possible explanation
-for ununderstandable errors is that an older version of the package,
-installed in a higher-priority location, took precedence.
 
 
 
 # Reproducible research with R, Rmarkdown and knitR
 ======================================================== 
 
-## Literate programming
+In the standard source code, comments are escaped.
 
-In literate programming default, text is _comment_.
+    x <- 1 # important
 
-~~~~
-We set `x` to `1` because this number is _important_.
-```{r}
-x <- 1
-```
-~~~~
 
-In contrast, in the standard way, by default text is _command_.
+In contrast, in _literate programming_ text is comment, and code is fenced.
 
-```r
-x <- 1 # important
-```
 
-### knitR
+    We set `x` to `1` because this number is _important_.
+    ```{r}
+    x <- 1
+    ```
 
-knitR executes the R code in the Rmarkdown file, and embeds the
+
+`knitR` executes the R code in the Rmarkdown file, and embeds the
 results of the commands in the final document in various formats such
 as HTML, Markdown, PDF or MS-Word.
 
@@ -253,6 +332,15 @@ Let's try it in _Rstudio_.
 ## Tip number 4:
 
 Always run sessionInfo() at the end.
+
+
+
+Actually, this presentation was made with RStudio
+======================================================== 
+
+Screenshot
+
+<https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations>
 
 
 
@@ -274,196 +362,8 @@ Docker, packrat, ...
 
 
 
-# Random number seed
-======================================================== 
 
-## Random numbers in R
-
-```
-> runif(1)
-[1] 0.9064395
-> rnorm(1)
-[1] -0.8364779
-> rpois(1,1)
-[1] 0
-```
-
-## Random seed
-
-Set the random seed so that identical computations return identical results.
-
-```
-> set.seed(1)
-> runif(1)
-[1] 0.2655087
-> runif(1)
-[1] 0.3721239
-> set.seed(1)
-> runif(2)
-[1] 0.2655087 0.3721239
-> set.seed(1)
-> runif(1)
-[1] 0.2655087
-> rm(.Random.seed)
-> runif(1)
-[1] 0.4206369
-```
-
-## Tip number 5
-
-Always do your first analysis without setting the random seed, and never ever
-use the random seed to pick up the most pleasing result.
-
-
-
-# Subsampling
-========================================================
-
-## Normalisation
-
-Some values do not scale proportionally with the number of reads in a library.
-A simple normalisation approach is to use only as many tags as in the most
-_shallow_ library.
-
-The `rrarefy` command of the `vegan` packages does this.
-
-<https://rawgit.com/charles-plessy/tutorial/master/CAGE_normalisation_by_subsampling/subsampling.html>
-
-### Tip number 6
-
-Be careful, some commands in `vegan` work by default on rows, not on columns.
-
-
-
-# Did we sequence enough reads ?
-======================================================== 
-
-![](Purkinje1.svg) ![](Purkinje2.svg)
-
-
-
-# What would we see if there were only 100 tags in a library ?
-======================================================== 
-
-External file: `Richness.pdf`.
-
-`rarefy` (only one `r`) from the `vegan` packages asks this question for
-any number of tags 
-
-This is the _richness_ index (Stuart H. Hurlbert (1971).  The Nonconcept of
-Species Diversity: A Critique and Alternative Parameters. Ecology 52:577–586.
-<http://dx.doi.org/10.2307/1934145>):  the “expected number of species in a
-sample individuals selected at random from a collection”.
-
-## The lowest scores in FANTOM5 PHASE 1
-
-```
-34.40602	salivary.20gland.2c.20adult.2c.20pool1.CNhs11677.10093.102C3
-39.81204	parotid.20gland.2c.20adult.CNhs12849.10199.103F1
-41.08809	Whole.20blood.20.28ribopure.29.2c.20donor090309.2c.20donation2.CNhs11671.12180.129A2
-42.64403	Whole.20blood.20.28ribopure.29.2c.20donor090612.2c.20donation3.CNhs11949.12184.129A6
-45.97416	submaxillary.20gland.2c.20adult.CNhs12852.10202.103F4
-46.08281	pancreas.2c.20adult.2c.20donor1.CNhs11756.10049.101G4
-```
-
-## And the highest scores
-
-```
-97.07249	counts.nucleus.20accumbens.2c.20adult.2c.20pool1.CNhs10644.10037.101F1
-97.13775	counts.lens.20epithelial.20cell.20line.3aSRA.2001.2f04.CNhs11750.10647.109A8
-97.26068	counts.insula.2c.20adult.2c.20pool1.CNhs10646.10039.101F3
-97.29081	counts.Clontech.20Human.20Universal.20Reference.20Total.20RNA.2c.20pool1.CNhs10608.10000.101A1
-97.30655	counts.choriocarcinoma.20.20cell.20line.3aT3M.3.CNhs11820.10618.108G6
-97.35912	counts.kidney.2c.20fetal.2c.20pool1.CNhs10652.10045.101F9
-```
-
-
-
-# Potential shortcoming
-======================================================== 
-
-The calculation of the richness score ignores the zero values. For instance, on
-a scale of 10, the following clusters would have the maximum score (10).
-
-```
-cluster1: 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-cluster2: 1 1 1 1 1 1 1 1 1 1 1 1 1 0 0 0 0
-cluster3: 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0
-```
-
-The solution is to down-sample on a scale that is at least as high as the
-number of libraries: in that case, there is more than one tag to distribute per
-library, so zero values are echoed by increased tag counts in other libraries. 
-
-### Tip number 7
-
-Merge similar libraries (replicates, etc) if needed. 
-
-
-
-# Similarity between libraries.
-======================================================== 
-
-External file: `Distance_and_clusters.pdf`.
-
-## Tip number 8
-
-Use `distfun=function(...){h}`, where `h` is a distance matrix, to force the
-correct dendrogram with `heatmap.2()`.
-
-## Tip number 9
-
-`R` is getting better at using multi-core processors.
-
-```r
-library(parallel)
-cl <- makeCluster(2, type = "PSOCK")
-parPvclust(cl, your-data-frame, nboot=1000)
-```
-
-
-
-# rowsum
-======================================================== 
-
-_Not to be confused with `rowSums`..._
-
-External file: `CAGE_differential_analysis1.html`
-
-
-
-# Edit your graphs with Inkscape
-======================================================== 
-
-http://www.inkscape.org
-
-## Tip
-
-Deduplicate and round data before plotting it.
-
-```r
-plotSlimSmear <- function(COMP, ROUND=2, PCH=19, CEX=1, ...) {
-  roundUnique <- function(TABLE) unique(round(TABLE, ROUND))
-  dgeObj <- get(paste(COMP, 'com', sep='.'))
-  upList        <-   up(dgeObj)
-  downList      <- down(dgeObj)
-  notSignifList <- setdiff( rownames(dgeObj)
-                          , c(up, down))
-  dgeTable <- dgeObj$table[,c('logCPM', 'logFC')]
-  upTable        <- roundUnique(dgeTable[upList,  ])
-  downTable      <- roundUnique(dgeTable[downList,])
-  notSignifTable <- roundUnique(dgeTable[notSignifList,])
-  plot(dgeTable, main=COMP, type='n')
-  grid()
-  points(notSignifTable, col='grey', pch=PCH, cex=CEX)
-  points(upTable,        col='blue', pch=PCH, cex=CEX)
-  points(downTable,       col='red', pch=PCH, cex=CEX)
-}
-```
-
-
-
-# Making your R packages !
+Make your R packages with Rstudio
 ======================================================== 
 
 A R package contains a bit of metadata, R functiond, unit tests, and
@@ -471,9 +371,10 @@ documentation in Sweave or... Markdown.
 
 Let's see <https://github.com/charles-plessy/oscR>.
 
+(Build and reload, etc.)
 
 
-# Pipes in <code>R</code>: <code>magrittr</code>, ...
+Pipes in <code>R</code>: <code>magrittr</code>, ...
 ======================================================== 
 
 <http://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html>
@@ -492,11 +393,7 @@ Pipes in `R` with `magrittr`.
 mydataframe %>% head
 ```
 
-
-
-
-
-# Open science
+Open science
 ======================================================== 
 
 With all these tools, you can make excellent open science.
@@ -521,43 +418,6 @@ With all these tools, you can make excellent open science.
  ❦ Make your manuscript available as a preprint on
    [bioRxiv](http://biorxiv.org/) prior submitting to peer review.
    
-
-
-# Debian Med
-======================================================== 
-
-Disclaimer: I am biased because I am member of the Debian Med project.
-
-Large number of available tools.
-
-Released every ~2 years within the Stable Debian distribution.
-
-Some updates are available through the `stable-backports` repository.
-
-Packages can always be found in <snapshot.debian.org>.  This repository
-does not contain all the versions of a tool, but all the versions *that
-were packaged*.  For some tools, this does not make a large difference.
-Let's see <http://snapshot.debian.org/package/bedtools/> as an example.
-
-
-
-# Take home message
-======================================================== 
-
-Desing your research to be reproducible *from the start*.
-
-Make sure your collaborators and supervisor are in agreement.
-
-
-
-This presentation was made with RStudio
-=======================================
-
-Screenshot
-
-<https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations>
-
-
   
 Make your science open and reproducible !
 ======================================================== 
@@ -582,88 +442,6 @@ means to:
 ## Open science
 
 The best practices of open science set the stage for reproducible research.
-
-------------------------------------------------------------------------
-
-# Keep track of the commands that were run
-======================================================== 
-
- ❦ The `history` command is a good start, but it is noisy.
-
-    mycommnd foo.fa --length 7
-	mycommand foo.fa --length 7
-	mycommand foo.fa --length 8
-	othercommand foo.fa | mycommand --length 8
-	...
-	
- ❦ When possible, use *integrated development environments* to edit
-   *and* run your commands with a proper text editor (one example among
-   many: [RStudio](https://www.rstudio.com/)).
-
- ❦ Use programming and scripts as much as possible, instead of doing
-   some calculations or operations by hand, in a way that is hard to
-   describe.
-
- ❦ It takes time, but will pay off. 
-
-My new motto: *I am too busy to work quickly.*
-
-Tip: be careful about what you promise.  Delivering *on time* is the
-key.
-
-
-# Remember when and how the analysis was developed
-======================================================== 
-
- ❦ Track changes, but do not follow that example:
-
-    myscript_2016.09.12.sh
-    myscript_2016.10.30.sh
-	myscript_2017.01.07.sh
-	…
-
- ❦ In the XXI<sup>th</sup> century, use **Version Control Systems**
-   (also known as revision control systems, source code management
-   systems, ...).  They give powerful ways to browse the history, and
-   much more.
-
- ❦ Version Control Systems are especially good for source code, but
-   also work for manuscripts or small-scalle data that does not vary
-   too frequently.  As of today, managing large files still requires
-   some expertise.
-
-
-
-# Ensure that you and others can run the analysis again.
-======================================================== 
-
-Two approaches:
-
- ❦ Freeze the environment (using snapshots, virtual machines or
-   containers).
-
- ❦ Test regularly if the analysis can be re-done in a fresh
-   environment.  This is called *"continuous integration"* (CI).
-
-
-
-# Ensure that you and others can run the analysis again, part 2
-======================================================== 
-
-## Open the data to the public.
-
- ❦ The data must be accessible : his is a requirement for publication
-   (although not for all kind of data).
- 
- ❦ Make sure that your analysis can run on the open data, not just on
-   your local copy on your intranet.
- 
- ❦ Best practice in my opinion: open data prior publication.
- 
-
-
-# Ensure that you and others can run the analysis again, part 3
-======================================================== 
 
 
 Thanks
