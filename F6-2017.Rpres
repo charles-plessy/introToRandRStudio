@@ -9,6 +9,9 @@
     top: 50%;
     left: 50%;
 }
+.small-code pre code {
+  font-size: 1.25em;
+}
 </style>
 
 Introduction to R, RStudio, R Notebooks and R presentations
@@ -57,15 +60,16 @@ becoming a platform for releasing results.
 
 The R language
 ======================================================== 
+class: small-code
 
-`R` calls variable "_objects_"; their names are plain text (no prefix such as `$`, etc).
+`R` calls variable "_objects_"; their names are plain text (no prefix such as `$`, etc.).
 In `R` programs, objects are rarely declared before use, but beware that they have no default value.
 
 ```{r error=TRUE}
 x + 1
 ```
 
-Often you will see this error when you forget to quote text.
+Pay attention to the error messages: here we forget to quote text.
 
 ```{r error=TRUE}
 read.csv(file = myFile.csv)
@@ -87,6 +91,8 @@ x
 x == 1
 ```
 
+***
+
 In this lecture, and like in many `R` resources, the leftwards arrow ("`<-`")" is used
 instead of the equal sign.  The rightwards arrow is seen more rarely, but can be
 useful in interactive sessions.
@@ -96,10 +102,12 @@ x <- 1
 1 -> x
 ```
 
+
 The R language likes vectors
 ======================================================== 
+class: small-code
 
-Most languages made differnces between _scalars_ and _arrays_.
+Most languages made differences between _scalars_ and _arrays_.
 In `R`, _scalars_ are vectors of length one.
 
 ```{r}
@@ -119,15 +127,15 @@ y <- c(10, 10, 20)
 x + y
 paste(x, y, sep = "_")
 paste0(x, ".txt")
-paste(y, collapse = "~~")
 ```
 
 
-Lists: a second core class of R
+Lists: a second cornerstone class of R
 ======================================================== 
+class: small-code
 
-Vectors can only contain elements of the same kind.  R will
-frequently _coerce_ the data if needed.
+Vectors only contain elements of the same kind.  R often
+_coerces_ data when needed.
 
 ```{r error = TRUE}
 x <- c(1, 2, 3, "apples!")
@@ -141,30 +149,30 @@ c(1, c(2, 3), FALSE)
 Lists can mix elements from many kinds, and can be nested.
 
 ```{r}
-list(1, c(2, 3), "apples!", list(T,F))
+list(c(2, 3), "hello", list(T,F))
 ```
 
 
 Data frames: a famous object class from the R language
 ======================================================== 
+class: small-code
 
-`data.frame`s are lists presented like tables.
+`data.frame`s are lists presented like tables. For more performance
+or modernity, look for `DataFrame`, `data.table` or `tibble`.
 
 ```{r}
-df <- data.frame( fruits = c("apples", "bananas", "oranges")
-                , price  = c(2, 1.5, 1.7)
-                , color  = factor(c("yellow", "yellow", "orange"))
-                , stringsAsFactors = FALSE)
-df
+df <- data.frame(
+  fruits = c("apples", "bananas", "oranges"),
+  price  = c(2, 1.5, 1.7),
+  color  = factor(c("yellow", "yellow", "orange")),
+  stringsAsFactors = FALSE)
 summary(df)
 ```
-
-For more performance or modernity, look for `DataFrame`, `data.table` or
-`tibble`.
 
 
 Subsetting elements of objects
 ======================================================== 
+class: small-code
 
 In brief: by coordinate...
 
@@ -186,12 +194,19 @@ df$pri
 Tip: in `R`, (almost) everything has a manual page.  Try: `help("[")`
 
 
-Different ways to say "nothing"
+R has different ways to say "nothing"
 ======================================================== 
 
+ - `NA` is for missing values.  This has a special meaning
+in statistics.
+
+ - `NULL` is nothing.
+ 
+ - `NaN` is "_not a number_".  This avoids interrupting
+    computation with errors.
+
 ```{r}
-NA   # not available
-NULL # nothing
+0 / 0
 ```
 
 ***
@@ -199,14 +214,15 @@ NULL # nothing
 ```{r}
 sum(1,2,NA)
 sum(1,2,NA, na.rm=T)
+sum(1,NULL)
 ```
 
 
 The R console
 ======================================================== 
 
-R has a command line interface (CLI).  Not only you can use it like a calculator,
-but you can allso plot graphs.
+R has a command line interface (CLI).  If you know nothing about `R`,
+you can use it like a calculator.
 
 ```{r}
 1 + 1
@@ -214,14 +230,14 @@ but you can allso plot graphs.
 
 ***
 
-Try `barplot(c(1,2,3))`.  A new window will pop up with a graph like the one below
+`R` is very useful at quickly preparing graphs.  Try `barplot(c(1,2,3))`.
 
 ```{r echo=FALSE}
 barplot(c(1,2,3))
 ```
 
 
-First steps in R with Rstudio
+First steps in R with RStudio
 ======================================================== 
 
 [Rstudio](http://www.rstudio.com/) is an integrated development
@@ -230,7 +246,12 @@ environment (IDE) for `R`.
 Try again `boxplot(1,2,3)`.  In _Rstudio_, the plots appear in a special area.
 In other environments, such commands just pop up a new window.
 
-## How did the installation go ?
+## By the way, how did the installation go ?
+
+If you could not install `R`, try it on-line, for instance:
+
+ - <http://tryr.codeschool.com/>.
+ - <https://try.jupyter.org/> (chose Welcome R - demo).
 
 <div class="footer">Tip: press the <code>tab</code> (↹) key for "<em>tab completion</em>"</div>
 
@@ -238,41 +259,24 @@ In other environments, such commands just pop up a new window.
 Packages
 ======================================================== 
 
-<div class="footer">Tip: never use `library()` in functions, use `requireNamespace()`.</div>
+<div class="footer">Tip: never use <code>library()</code> in functions, use <code>requireNamespace()</code>.</div>
 
-`R` _packages_ are software libraries used to provide extensions
-to `R`'s base functionalities.  Two steps are necessary to use them:
+`R` _packages_ are software libraries used to extend `R`'s base functions.
 
- - First, _install_ the packages.  This means downloading them from
-   a repository and installing their files in a specific directory
-   on the drive.
+ - _Installing_ packages means downloading them and installing their files in a 
+   pecific directory.
    
- - Then, make the functions of the package available to `R` in the
-   memory, typically using the `library()` command.
+ - To use the packages within `R`, load it using commands like `library()`.
    
 *** 
 
 There four main sources of packages
 
- - the Complete `R` Archive Network (CRAN),
- - Bioconductor,
- - GitHub (`devtools::install_github`),
+ - the Complete `R` Archive Network ([CRAN](https://cran.r-project.org/)),
+ - [Bioconductor](https://bioconductor.org/),
+ - [GitHub](https://github.com/) (`devtools::install_github`),
  - For Linux users (especially Debian and Ubuntu), binary packages.
  
-
-R packages from Linux distributions
-======================================================== 
-
-R packages from distributions like Debian can be old.  But equally old.
-
-Example <https://packages.debian.org/r-bioc-edger>
-
-Linux distribution are usually better regarding external dependancies.
-
-Packages can be installed in various locations; one possible explanation
-for ununderstandable errors is that an older version of the package,
-installed in a higher-priority location, took precedence.
-
 
 Example installation from RStudio
 ======================================================== 
@@ -280,14 +284,12 @@ Example installation from RStudio
 ```r
 install.packages("rmarkdown")
 ```
+<center>~ or ~
 
-<center>~ or ~</cente>
-
-
-![](InstallPackages.png)
+![](InstallPackages.png)</center>
 
 
-# R Markdown
+R Markdown
 ======================================================== 
 
 ![](OpenMarkdown.png)
@@ -295,17 +297,9 @@ install.packages("rmarkdown")
 ![](Markdown.png)
 
 
-Tip: put a command in parenthesis to force ouptut of its value.
-
-```{r}
-x <- 1
-(x <- 1)
-```
-
-
-
-# Reproducible research with R, Rmarkdown and knitR
+Reproducible research with R, Rmarkdown and knitR
 ======================================================== 
+class: small-code
 
 In the standard source code, comments are escaped.
 
@@ -316,112 +310,40 @@ In contrast, in _literate programming_ text is comment, and code is fenced.
 
 
     We set `x` to `1` because this number is _important_.
-    ```{r}
+    ```⎨r⎬
     x <- 1
     ```
 
-
-`knitR` executes the R code in the Rmarkdown file, and embeds the
-results of the commands in the final document in various formats such
-as HTML, Markdown, PDF or MS-Word.
-
-***This way, the commands used to make a figure are never lost.***
-
-Let's try it in _Rstudio_.
-
-## Tip number 4:
-
-Always run sessionInfo() at the end.
-
+`knitR` executes the R code in the R Markdown file, and embeds the
+results in the final document in various formats such
+as HTML, Markdown, PDF...
 
 
 Actually, this presentation was made with RStudio
 ======================================================== 
 
-Screenshot
+Some on-line documentation.
 
 <https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations>
 
+Let's edit it together.
 
-
-# Integration between Git and RStudio.
-======================================================== 
-
-Cherry on the cake, RStudio has a nice interface to work with Git
-repositories.  If time remains, let's see it in action.
+Cherry on the cake, RStudio has a nice interface to work with __Git
+repositories__.  If time remains, let's see it in action.
 
 
 Where to get support
 ======================================================== 
 
-Biostars, Support.BioC biostar. StackOverflow, Biostars: discuss in public !
-
-Example Horizon 2020
-
-Docker, packrat, ...
-
-
-
-
-Make your R packages with Rstudio
-======================================================== 
-
-A R package contains a bit of metadata, R functiond, unit tests, and
-documentation in Sweave or... Markdown.
-
-Let's see <https://github.com/charles-plessy/oscR>.
-
-(Build and reload, etc.)
-
-
-Pipes in <code>R</code>: <code>magrittr</code>, ...
-======================================================== 
-
-<http://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html>
-
-`head(unique(round(subset(mydataframe, value > 100` .... and how many closing parentheses after this ?
-
-Pipes in the shell:
-
-```sh
-grep myfile.txt | head
-```
-
-Pipes in `R` with `magrittr`.
-
-```
-mydataframe %>% head
-```
-
-Open science
-======================================================== 
-
-With all these tools, you can make excellent open science.
-
- ❦ Make your work reproducible from the start.  **This includes
-   discussiong with your collaborators and making very sure that
-   they understand what is meant by <em>open</em>.**
- 
- ❦ Think loud, discuss loud, blog, tweet, discuss your technical
-   issues on forums such as
-   [StackOverflow](https://stackoverflow.com/) or
-   [Biostars](https://www.biostars.org/), so that 1) everybody elese
-   can learn from your experience and 2) in a year or two, when you
-   have forgot the answers, you can find them with a simple search
-   engine.
-
- ❦ Release atomic units of your work on platform providing version
-   control, continuous integration and website rendering.
-
- ❦ Open your raw data on Figshare, Dryad, Zotero, ...
-
- ❦ Make your manuscript available as a preprint on
-   [bioRxiv](http://biorxiv.org/) prior submitting to peer review.
+Think loud, discuss loud, blog, [toot](https://en.wikipedia.org/wiki/Mastodon_(software)),
+discuss your technical issues on forums such as [StackOverflow](https://stackoverflow.com/)
+or [Biostars](https://www.biostars.org/), so that 1) everybody else can learn from your experience
+and 2) in a year or two, when your _future self_ have forgot the answers, you can find them
+with a simple search engine.
    
   
 Make your science open and reproducible !
 ======================================================== 
-
 
 ## For reproducible research, we want to:
 
@@ -438,10 +360,6 @@ means to:
  ❦ Remember when and how we developed our analysis (this is also handy
    in case of authorship disputes...).  This is the first step towards
    letting others confirm or challenge the results with other tools.
-
-## Open science
-
-The best practices of open science set the stage for reproducible research.
 
 
 Thanks
